@@ -1,0 +1,124 @@
+<html>
+ <head>
+  <script type="application/x-javascript">
+    var canvas;
+    
+    function draw() {
+        canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+
+       
+
+        var x, y, row, col
+        var cb, cr, color, l;
+        var radius = 30;
+        var CX = 512;
+        var CY = 512;
+        var i=1;
+        for (col = 0; col < 16; col += 1) {
+          for (row = 0; row < 16; row += 1) {
+            
+            x = col*64;
+            y = row*64;
+            
+            
+            cb = x / CX - 1;
+            cr = y / CY - 1;
+            
+            if (isOdd(i)) {
+                l = 1;
+            }
+            else l = 0.60
+            
+            color = ycbcrToRgb(0.7, cb, cr, l);
+            
+            ctx.fillStyle = color;
+            ctx.fillRect (x, y, x+64, y+64);
+            ctx.strokeStyle="#FFFFFF";
+            ctx.strokeRect(x, y, x+64, y+64);
+            
+            
+            ctx.font = "24px Arial";
+            ctx.textAlign = "left";
+            ctx.fillStyle = "white";
+            ctx.fillText( String.fromCharCode(65 + col), x+5, y+23);
+            
+            
+            ctx.font = "24px Arial";
+            ctx.fillStyle = "black";
+            ctx.textAlign = "right";
+            ctx.fillText( row, x+60, y+57);
+            i+=1;
+          }
+          i+=1;          
+        }
+        /*
+        // save canvas image as data url (png format by default)
+        var dataURL = canvas.toDataURL();
+
+        // set canvasImg image src to dataURL
+        // so it can be saved as an image
+        document.getElementById('canvasImg').src = dataURL;
+        */
+        
+        
+        
+        
+        downloadLnk.addEventListener('click', download, false);
+        
+    };
+    
+    function isOdd(num) { return num % 2;}
+    
+    // From http://wonderfl.net/c/3AnJ
+    function ycbcrToRgb(y, cb, cr, l) {
+        
+        //console.log(cb+', '+cr);
+        /*
+        var r = y              + 1.402 * cr;
+        var g = y - 0.344 * cb - 0.714 * cr;
+        var b = y + 1.772 * cb
+        */
+        var r = y + 0.9563 * cb + 0.6210 * cr;
+        var g = y - 0.2721 * cb - 0.6474 * cr;
+        var b = y - 1.1070 * cb + 1.7046 * cr;
+        
+       
+        r = (r * l);
+        g = (g * l);
+        b = (b * l);
+        
+        r *= 255;
+        g *= 255;
+        b *= 255;
+        r >> 0;
+        g >> 0;
+        b >> 0;
+        if (r < 0) r = 0;
+        if (g < 0) g = 0;
+        if (b < 0) b = 0;
+        if (r > 255) r = 255;
+        if (g > 255) g = 255;
+        if (b > 255) b = 255;
+        
+        //console.log(r.toString(16)+g.toString(16)+b.toString(16));
+        
+        //return r << 16 | g << 8 | b;
+        return "rgba(" + [Math.floor(r), Math.floor(g), Math.floor(b), 1].join(",") + ")";
+    }
+    
+    function download() {
+        var dt = canvas.toDataURL('image/png');
+        this.href = dt;
+    };
+
+  
+  
+  </script>
+</head>
+
+    <body onload="draw()">
+        <a href="#" id="downloadLnk" download="1024x1024_colors.png">Download as image</a><br>
+        <canvas id="canvas" width="1024" height="1024" ></canvas>
+    </body>
+</html>
